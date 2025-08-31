@@ -1,25 +1,24 @@
+# .github/workflows/scraper.yml
 name: Run Web Scraper
 
 on:
+  workflow_dispatch:        # <- required for the green "Run workflow" button
+  push:
+    branches: [ main ]
   schedule:
-    - cron: '0 0 * * 1'   # Runs every Monday at 00:00 UTC (for example)
+    - cron: '0 0 * * 1'
 
 jobs:
-  build:
+  run:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repo content
-        uses: actions/checkout@v2
-
-      - name: Setup Python
-        uses: actions/setup-python@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: '3.10'
-
-      - name: Install dependencies
+      - name: Install deps
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements.txt
-
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; else pip install requests beautifulsoup4; fi
       - name: Run scraper
         run: python main.py
